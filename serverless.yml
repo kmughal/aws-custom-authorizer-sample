@@ -1,0 +1,28 @@
+service: jwt-authorizer
+
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+          cors: true
+          response:
+            headers:
+              Cache-Control: "'max-age:120'"
+          authorizer:
+            name: customAuthorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+
+
+  customAuthorizer:
+    handler: customAuthorizer/index.customAuthorizer
